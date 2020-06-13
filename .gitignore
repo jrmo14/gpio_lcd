@@ -1,0 +1,4 @@
+/target
+deploy.sh
+Cargo.lock
+.idea

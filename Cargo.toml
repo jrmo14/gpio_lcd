@@ -1,0 +1,11 @@
+[package]
+name = "lcd"
+version = "0.1.0"
+authors = ["Jackson <jrmoffet@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+gpio-cdev = "0.3.0"
+
+[dev-dependencies]
+clap = "2.33.1"
