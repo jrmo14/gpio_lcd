@@ -1,11 +1,12 @@
 [package]
-name = "lcd"
+name = "gpio_lcd"
 version = "0.1.0"
 authors = ["Jackson <jrmoffet@gmail.com>"]
 edition = "2018"
 
 [dependencies]
 gpio-cdev = "0.3.0"
+parking_lot = "0.10.2" # Need parking lot because it's mutex is fair
 
 [dev-dependencies]
 clap = "2.33.1"

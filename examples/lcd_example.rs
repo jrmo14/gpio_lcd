@@ -3,8 +3,8 @@ use std::thread::sleep;
 use std::time::Duration;
 
 use clap::{crate_authors, crate_version, App, Arg};
-
-use lcd::Lcd;
+use lcd::lcd::LcdDriver;
+use lcd::scheduler::{Job, ThreadedLcd};
 
 fn main() -> Result<(), String> {
     let matches = App::new("Rust LCD Test")
@@ -76,9 +76,9 @@ fn main() -> Result<(), String> {
         data_pins.push(pin_res.as_ref().unwrap());
     });
 
-    let lcd = match Lcd::new(
-        2,
+    let mut lcd = match LcdDriver::new(
         16,
+        2,
         matches.value_of("chip").unwrap_or("/dev/gpiochip0"),
         matches.is_present("four_bit_mode"),
         u8::from_str(matches.value_of("rs").unwrap()).unwrap(),
@@ -97,38 +97,34 @@ fn main() -> Result<(), String> {
         Err(e) => return Err(format!("{}", e)),
     };
 
-    lcd.clear();
-
-    // match lcd.set_cursor(0, 0) {
-    //     Ok(_) => {}
-    //     Err(e) => return Err(format!("{}", e)),
-    // };
-
-    match lcd.print("HI THERE!") {
-        Ok(_) => {}
-        Err(e) => return Err(format!("{}", e)),
-    }
-
-    match lcd.set_cursor(1, 0) {
-        Ok(_) => {}
-        Err(e) => return Err(format!("{}", e)),
-    }
-
-    match lcd.print("Testing LCD.") {
-        Ok(_) => {}
-        Err(e) => return Err(format!("{}", e)),
-    }
-
-    lcd.clear();
-    while true {
-        for i in 0..128 as u8 {
-            lcd.clear();
-            lcd.set_cursor(0, 0);
-            lcd.write(i);
-            lcd.set_cursor(1, 0);
-            lcd.print(i.to_string().as_str());
-            sleep(Duration::from_millis(100));
-        }
-    }
+    // loop {
+    //     for i in 0..128 as u8 {
+    //         lcd.clear();
+    //         lcd.set_cursor(0, 0);
+    //         lcd.write(i);
+    //         lcd.set_cursor(1, 0);
+    //         lcd.print(i.to_string().as_str());
+    //         sleep(Duration::from_millis(100));
+    //     }
+    // }
+    let thread_driver = ThreadedLcd::with_driver(lcd);
+    thread_driver.add_job(Job::new(
+        "Hello Scrolling World, This Is a Test",
+        0,
+        Some(Duration::from_millis(1000)),
+    ));
+    thread_driver.add_job(Job::new(
+        "this is row 2 test, please just work",
+        1,
+        Some(Duration::from_millis(250)),
+    ));
+    sleep(Duration::from_secs(60));
+    println!("Goodbye");
+    thread_driver.clear_jobs();
+    thread_driver.add_job(Job::new("Goodbye", 0, None));
+    thread_driver.add_job(Job::new("Test", 1, None));
+    sleep(Duration::from_secs(10));
+    thread_driver.add_job(Job::new("", 0, None));
+    thread_driver.add_job(Job::new("", 1, None));
     Ok(())
 }
