@@ -116,6 +116,14 @@ impl ThreadedLcd {
         self.job_list.lock().clear();
         println!("List cleared")
     }
+
+    pub fn clear_row(&self, row: u8) {
+        println!("Trying to clear {}", row);
+        self.job_list.lock().retain(|job| job.row != row);
+        println!("Adding clear job");
+        self.add_job(Job::new("", row, None));
+        println!("Cleared row {}", row);
+    }
 }
 
 impl Job {

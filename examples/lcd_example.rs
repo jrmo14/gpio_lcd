@@ -3,8 +3,8 @@ use std::thread::sleep;
 use std::time::Duration;
 
 use clap::{crate_authors, crate_version, App, Arg};
-use lcd::lcd::LcdDriver;
-use lcd::scheduler::{Job, ThreadedLcd};
+use gpio_lcd::lcd::LcdDriver;
+use gpio_lcd::scheduler::{Job, ThreadedLcd};
 
 fn main() -> Result<(), String> {
     let matches = App::new("Rust LCD Test")
@@ -97,16 +97,6 @@ fn main() -> Result<(), String> {
         Err(e) => return Err(format!("{}", e)),
     };
 
-    // loop {
-    //     for i in 0..128 as u8 {
-    //         lcd.clear();
-    //         lcd.set_cursor(0, 0);
-    //         lcd.write(i);
-    //         lcd.set_cursor(1, 0);
-    //         lcd.print(i.to_string().as_str());
-    //         sleep(Duration::from_millis(100));
-    //     }
-    // }
     let thread_driver = ThreadedLcd::with_driver(lcd);
     thread_driver.add_job(Job::new(
         "Hello Scrolling World, This Is a Test",
@@ -118,13 +108,28 @@ fn main() -> Result<(), String> {
         1,
         Some(Duration::from_millis(250)),
     ));
-    sleep(Duration::from_secs(60));
+    sleep(Duration::from_secs(15));
+
+    thread_driver.clear_jobs();
+
+    thread_driver.add_job(Job::new(
+        "Here's another test, lets scroll through",
+        0,
+        Some(Duration::from_millis(1000)),
+    ));
+    thread_driver.add_job(Job::new(
+        "just keep scrolling, just keep scrolling",
+        1,
+        Some(Duration::from_millis(250)),
+    ));
+    sleep(Duration::from_secs(15));
     println!("Goodbye");
     thread_driver.clear_jobs();
     thread_driver.add_job(Job::new("Goodbye", 0, None));
-    thread_driver.add_job(Job::new("Test", 1, None));
+    // thread_driver.add_job(Job::new("Test", 1, None));
     sleep(Duration::from_secs(10));
-    thread_driver.add_job(Job::new("", 0, None));
-    thread_driver.add_job(Job::new("", 1, None));
+    thread_driver.clear_row(0);
+    thread_driver.clear_row(1);
+    println!("Clear");
     Ok(())
 }

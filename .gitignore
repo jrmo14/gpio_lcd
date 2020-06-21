@@ -2,3 +2,4 @@
 deploy.sh
 Cargo.lock
 .idea
+.cargo
