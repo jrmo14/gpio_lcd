@@ -1,6 +1,7 @@
 use std::str::FromStr;
 use std::thread::sleep;
 use std::time::Duration;
+use std::str;
 
 use clap::{crate_authors, crate_version, App, Arg};
 use gpio_lcd::lcd::LcdDriver;
@@ -98,38 +99,17 @@ fn main() -> Result<(), String> {
     };
 
     let thread_driver = ThreadedLcd::with_driver(lcd);
+    let test_codes: Vec<u8> = vec![0, 1, 2, 3, 4, 5, 6];
     thread_driver.add_job(Job::new(
-        "Hello Scrolling World, This Is a Test",
+        format!("Test {}", str::from_utf8(&test_codes).unwrap()).as_str(),
         0,
-        Some(Duration::from_millis(1000)),
+        Option::from(Duration::from_millis(500)),
     ));
-    thread_driver.add_job(Job::new(
-        "this is row 2 test, please just work",
-        1,
-        Some(Duration::from_millis(250)),
-    ));
-    sleep(Duration::from_secs(15));
 
+    sleep(Duration::from_secs(60 * 60));
     thread_driver.clear_jobs();
-
-    thread_driver.add_job(Job::new(
-        "Here's another test, lets scroll through",
-        0,
-        Some(Duration::from_millis(1000)),
-    ));
-    thread_driver.add_job(Job::new(
-        "just keep scrolling, just keep scrolling",
-        1,
-        Some(Duration::from_millis(250)),
-    ));
-    sleep(Duration::from_secs(15));
-    println!("Goodbye");
-    thread_driver.clear_jobs();
-    thread_driver.add_job(Job::new("Goodbye", 0, None));
-    // thread_driver.add_job(Job::new("Test", 1, None));
-    sleep(Duration::from_secs(10));
     thread_driver.clear_row(0);
     thread_driver.clear_row(1);
-    println!("Clear");
+
     Ok(())
 }

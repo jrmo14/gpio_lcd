@@ -9,6 +9,8 @@ use std::collections::{BinaryHeap, HashMap};
 use std::ops::DerefMut;
 use std::sync::{mpsc, Arc};
 use std::thread;
+use crate::icons::Icon;
+
 // TODO add independent row scrolling and custom characters
 
 // Adapted from Arduino standard library LiquidCrystal.cpp/h
@@ -184,6 +186,16 @@ impl LcdDriver {
         lcd_struct.clear()?;
 
         lcd_struct.command(LCD_ENTRY_MODE_SET | disp_mode)?;
+
+        lcd_struct.create_char(Icon::MAIL.index(), Icon::MAIL.value())?;
+        lcd_struct.create_char(Icon::BELL.index(), Icon::BELL.value())?;
+        lcd_struct.create_char(Icon::FILLEDBOX.index(), Icon::FILLEDBOX.value())?;
+        lcd_struct.create_char(Icon::EMPTYBOX.index(), Icon::EMPTYBOX.value())?;
+        lcd_struct.create_char(Icon::MAIL.index(), Icon::MAIL.value())?;
+        lcd_struct.create_char(Icon::BELL.index(), Icon::BELL.value())?;
+        lcd_struct.create_char(Icon::MUSIC.index(), Icon::MUSIC.value())?;
+        lcd_struct.create_char(Icon::PLAY.index(), Icon::PLAY.value())?;
+        lcd_struct.create_char(Icon::PAUSE.index(), Icon::PAUSE.value())?;
 
         Ok(lcd_struct)
     }
