@@ -132,9 +132,19 @@ impl Job {
         }
     }
 
+    pub fn empty(row: u8) -> Self {
+        Job{
+            text: "".to_string(),
+            row,
+            index: 0,
+            rate: None,
+            last_run: None,
+        }
+    }
+
     pub fn run(&mut self, driver: Arc<Mutex<LcdDriver>>) {
         let driver = driver.lock();
-        driver.set_cursor(self.row, 0);
+        driver.set_cursor(self.row, 0).unwrap();
         let formatted_string = if self.text.len() <= driver.get_cols() as usize {
             format!(
                 "{: <width$}",
@@ -157,7 +167,7 @@ impl Job {
                 [self.index as usize..(self.index + driver.get_cols() as i32) as usize]
                 .to_string()
         };
-        driver.print(formatted_string.as_str());
+        driver.print(formatted_string.as_str()).unwrap();
         self.index += 1;
         if self.index > self.text.len() as i32 {
             self.index = -((driver.get_cols() / 2) as i32);
