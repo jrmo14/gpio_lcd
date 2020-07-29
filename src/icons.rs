@@ -9,7 +9,7 @@ pub enum Icon {
 }
 
 impl Icon {
-    pub fn value(&self) -> [u8; 8] {
+    pub fn char_data(&self) -> [u8; 8] {
         match *self {
             Icon::MAIL => [0x00, 0x00, 0x00, 0x1F, 0x1B, 0x15, 0x11, 0x1F],
             Icon::BELL => [0x00, 0x04, 0x0A, 0x0A, 0x11, 0x11, 0x1F, 0x04],
@@ -30,8 +30,6 @@ impl Icon {
             Icon::MUSIC => 4,
             Icon::PLAY => 5,
             Icon::PAUSE => 6,
-
         }
     }
 }
-
