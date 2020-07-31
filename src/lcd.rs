@@ -10,7 +10,7 @@ use std::collections::{BinaryHeap, HashMap};
 use std::ops::DerefMut;
 use std::sync::{mpsc, Arc};
 use std::thread;
-
+use unidecode::unidecode;
 // TODO add independent row scrolling and custom characters
 
 // Adapted from Arduino standard library LiquidCrystal.cpp/h
@@ -201,13 +201,7 @@ impl LcdDriver {
     }
 
     pub fn print(&self, disp_str: &str) -> Result<(), Error> {
-        for c in disp_str.bytes().map(|char| {
-            if char > 127 {
-                Icon::EMPTYBOX.index()
-            } else {
-                char
-            }
-        }) {
+        for c in unidecode(disp_str).bytes() {
             self.write(c)?
         }
         Ok(())
