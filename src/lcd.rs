@@ -210,7 +210,7 @@ impl LcdDriver {
     pub fn print_wrapped(&self, disp_str: &str) -> Result<(), Error> {
         self.set_cursor(0, 0)?;
         let mut char_count = 0;
-        for c in disp_str.chars() {
+        for c in unidecode(disp_str).bytes() {
             self.write(c as u8)?;
             char_count += 1;
             if char_count == 16 {
