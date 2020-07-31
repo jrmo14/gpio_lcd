@@ -1,4 +1,6 @@
+use crate::lcd::LcdDriver;
 use parking_lot::Mutex;
+use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::sync::atomic::Ordering::AcqRel;
 use std::sync::mpsc::{channel, Receiver, Sender};
@@ -6,9 +8,7 @@ use std::sync::Arc;
 use std::thread;
 use std::thread::{sleep, JoinHandle};
 use std::time::{Duration, Instant};
-
-use crate::lcd::LcdDriver;
-use std::cmp::Ordering;
+use unidecode::unidecode;
 
 pub struct ThreadedLcd {
     lcd_driver: Arc<Mutex<LcdDriver>>,
@@ -124,7 +124,7 @@ impl ThreadedLcd {
 impl Job {
     pub fn new(text: &str, row: u8, rate: Option<Duration>) -> Self {
         Job {
-            text: text.to_string(),
+            text: unidecode(text).to_string(),
             row,
             index: 0,
             rate,
@@ -133,7 +133,7 @@ impl Job {
     }
 
     pub fn empty(row: u8) -> Self {
-        Job{
+        Job {
             text: "".to_string(),
             row,
             index: 0,
@@ -213,7 +213,7 @@ impl Ord for Job {
                         None => Ordering::Greater,
                     },
                     None => match other.last_run {
-                        Some(other_last_run) => Ordering::Less,
+                        Some(_) => Ordering::Less,
                         None => rate.cmp(&other_rate),
                     },
                 },
